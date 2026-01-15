@@ -589,12 +589,88 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Login Screen */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-overlay.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo img {
+            height: 50px;
+            margin-bottom: 1rem;
+        }
+
+        .login-logo h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .login-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .sidebar.hidden,
+        .main.hidden {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-overlay">
+        <div class="login-box">
+            <div class="login-logo">
+                <img src="images/logo.png" alt="SafarSorted">
+                <h2>Admin Login</h2>
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" required>
+                </div>
+                <div id="loginError" class="login-error" style="display: none;">Invalid credentials</div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar hidden" id="sidebar">
         <div class="sidebar-logo">
             <img src="images/logo.png" alt="SafarSorted">
             <span>Admin</span>
@@ -637,10 +713,16 @@
                     stroke-width="2">
                     <path d="M15 18l-6-6 6-6" />
                 </svg> Back to Website</a>
+            <a href="#" onclick="logout(); return false;" style="margin-top: 10px; color: #ef4444;"><svg width="16"
+                    height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg> Logout</a>
         </div>
     </aside>
 
-    <main class="main">
+    <main class="main hidden" id="mainPanel">
         <header class="header">
             <h1 id="pageTitle">📊 Dashboard Overview</h1>
             <div style="display: flex; gap: 10px;">
@@ -703,16 +785,59 @@
     </div>
 
     <script>
+        // Admin Credentials (in production, this should verify against backend)
+        const ADMIN_USER = 'Mehul20020';
+        const ADMIN_PASS = 'Ninja2002@';
+
         // Data Store
         let inquiries = [];
         let currentTab = 'dashboard';
         let currentFilter = 'all';
         let searchQuery = '';
+        let isAuthenticated = false;
+
+        // Check if already logged in
+        function checkAuth() {
+            const session = sessionStorage.getItem('safarsorted_admin_auth');
+            if (session === 'true') {
+                isAuthenticated = true;
+                showAdminPanel();
+            }
+        }
+
+        // Handle Login
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (username === ADMIN_USER && password === ADMIN_PASS) {
+                sessionStorage.setItem('safarsorted_admin_auth', 'true');
+                isAuthenticated = true;
+                showAdminPanel();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        // Show Admin Panel
+        function showAdminPanel() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('sidebar').classList.remove('hidden');
+            document.getElementById('mainPanel').classList.remove('hidden');
+            loadData();
+            renderDashboard();
+        }
+
+        // Logout
+        function logout() {
+            sessionStorage.removeItem('safarsorted_admin_auth');
+            location.reload();
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            renderDashboard();
+            checkAuth();
         });
 
         // Load Data from localStorage
