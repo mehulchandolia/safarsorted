@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SafarSorted</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c41e3a;
+            --primary-dark: #a01830;
+            --primary-light: #ffcdd2;
+            --bg: #0a0a0a;
+            --bg-card: #141414;
+            --bg-elevated: #1a1a1a;
+            --text: #ffffff;
+            --text-muted: #888;
+            --border: #2a2a2a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 240px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-logo img {
+            height: 36px;
+        }
+
+        .sidebar-logo span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-item svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .sidebar-footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-footer a:hover {
+            color: var(--primary);
+        }
+
+        /* Main */
+        .main {
+            margin-left: 240px;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-card);
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 1.5rem 2rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .stat-icon.primary {
+            background: rgba(211, 47, 47, 0.15);
+            color: var(--primary);
+        }
+
+        .stat-icon.info {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+        }
+
+        .stat-icon.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .stat-icon.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Table */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 0.875rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 500;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            background: var(--bg-elevated);
+        }
+
+        tr:hover td {
+            background: rgba(211, 47, 47, 0.03);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .badge-new {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+        }
+
+        .badge-contacted {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .badge-booked {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .badge-cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            justify-content: center;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .action-btn.whatsapp:hover {
+            border-color: #25D366;
+            color: #25D366;
+        }
+
+        .action-btn.delete:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+
+        .action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-elevated);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 1.25rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-elevated);
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Search */
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        .search-box svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 8px;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-elevated);
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Settings */
+        .settings-section {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+
+        .settings-section h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+        }
+
+        .settings-row label {
+            font-size: 0.9rem;
+        }
+
+        .settings-row input[type="text"] {
+            width: 300px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="images/logo.png" alt="SafarSorted">
+            <span>Admin</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                </svg>
+                Dashboard
+            </a>
+            <a class="nav-item" data-tab="inquiries" onclick="switchTab('inquiries')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Inquiries
+            </a>
+            <a class="nav-item" data-tab="travelers" onclick="switchTab('travelers')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Travelers
+            </a>
+            <a class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                Settings
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="index.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M15 18l-6-6 6-6" />
+                </svg> Back to Website</a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="header">
+            <h1 id="pageTitle">📊 Dashboard Overview</h1>
+            <div style="display: flex; gap: 10px;">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search..." oninput="handleSearch(this.value)">
+                </div>
+                <button class="btn btn-primary" onclick="refreshData()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6M1 20v-6h6" />
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+        </header>
+
+        <div class="content" id="mainContent">
+            <!-- Content loaded by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Update Inquiry</h3>
+                <button class="modal-close" onclick="closeModal()"><svg width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg></button>
+            </div>
+            <form id="editForm" onsubmit="saveInquiry(event)">
+                <div class="modal-body">
+                    <input type="hidden" id="editId">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="editStatus">
+                            <option value="new">🔵 New</option>
+                            <option value="contacted">🟠 Contacted</option>
+                            <option value="booked">🟢 Booked</option>
+                            <option value="cancelled">🔴 Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="editNotes" placeholder="Add notes..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data Store
+        let inquiries = [];
+        let currentTab = 'dashboard';
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderDashboard();
+        });
+
+        // Load Data from localStorage
+        function loadData() {
+            inquiries = JSON.parse(localStorage.getItem('safarsorted_inquiries') || '[]');
+        }
+
+        // Save Data to localStorage
+        function saveData() {
+            localStorage.setItem('safarsorted_inquiries', JSON.stringify(inquiries));
+        }
+
+        // Get Stats
+        function getStats() {
+            return {
+                total: inquiries.length,
+                new: inquiries.filter(i => i.status === 'new').length,
+                contacted: inquiries.filter(i => i.status === 'contacted').length,
+                booked: inquiries.filter(i => i.status === 'booked').length
+            };
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+            const titles = { dashboard: '📊 Dashboard Overview', inquiries: '💬 All Inquiries', travelers: '👥 Travelers Database', settings: '⚙️ Settings' };
+            document.getElementById('pageTitle').textContent = titles[tab];
+
+            if (tab === 'dashboard') renderDashboard();
+            else if (tab === 'inquiries') renderInquiries();
+            else if (tab === 'travelers') renderTravelers();
+            else if (tab === 'settings') renderSettings();
+        }
+
+        // Render Dashboard
+        function renderDashboard() {
+            const stats = getStats();
+            let recent = inquiries.slice(0, 10);
+            // Apply search filter
+            if (searchQuery) {
+                recent = inquiries.filter(i =>
+                    i.name.toLowerCase().includes(searchQuery) ||
+                    i.phone.includes(searchQuery) ||
+                    i.destination.toLowerCase().includes(searchQuery)
+                );
+            }
+            recent = recent.slice(0, 5);
+
+            document.getElementById('mainContent').innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-icon primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="stat-value">${stats.total}</div><div class="stat-label">Total Inquiries</div></div>
+                    <div class="stat-card"><div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="stat-value">${stats.new}</div><div class="stat-label">Pending</div></div>
+                    <div class="stat-card"><div class="stat-icon warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg></div><div class="stat-value">${stats.contacted}</div><div class="stat-label">Contacted</div></div>
+                    <div class="stat-card"><div class="stat-icon success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="stat-value">${stats.booked}</div><div class="stat-label">Booked</div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2>Recent Inquiries</h2><button class="btn btn-sm btn-outline" onclick="switchTab('inquiries')">View All</button></div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Destination</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody>${recent.length ? recent.map(i => renderRow(i)).join('') : '<tr><td colspan="6"><div class="empty-state"><p>No inquiries yet</p></div></td></tr>'}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Inquiries
+        function renderInquiries() {
+            let filtered = inquiries;
+            if (currentFilter !== 'all') filtered = filtered.filter(i => i.status === currentFilter);
+            if (searchQuery) filtered = filtered.filter(i => i.name.toLowerCase().includes(searchQuery) || i.phone.includes(searchQuery) || i.destination.toLowerCase().includes(searchQuery));
+
+            document.getElementById('mainContent').innerHTML = `
+                <div class="card">
+                    <div class="filters">
+                        <button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" onclick="setFilter('all')">All (${inquiries.length})</button>
+                        <button class="filter-btn ${currentFilter === 'new' ? 'active' : ''}" onclick="setFilter('new')">New (${inquiries.filter(i => i.status === 'new').length})</button>
+                        <button class="filter-btn ${currentFilter === 'contacted' ? 'active' : ''}" onclick="setFilter('contacted')">Contacted (${inquiries.filter(i => i.status === 'contacted').length})</button>
+                        <button class="filter-btn ${currentFilter === 'booked' ? 'active' : ''}" onclick="setFilter('booked')">Booked (${inquiries.filter(i => i.status === 'booked').length})</button>
+                        <button class="filter-btn ${currentFilter === 'cancelled' ? 'active' : ''}" onclick="setFilter('cancelled')">Cancelled (${inquiries.filter(i => i.status === 'cancelled').length})</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Destination</th><th>Travelers</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody>${filtered.length ? filtered.map(i => renderFullRow(i)).join('') : '<tr><td colspan="7"><div class="empty-state"><p>No inquiries found</p></div></td></tr>'}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Travelers
+        function renderTravelers() {
+            let travelers = [...new Map(inquiries.map(i => [i.phone, i])).values()];
+            // Apply search filter
+            if (searchQuery) {
+                travelers = travelers.filter(t =>
+                    t.name.toLowerCase().includes(searchQuery) ||
+                    t.phone.includes(searchQuery)
+                );
+            }
+
+            document.getElementById('mainContent').innerHTML = `
+                <div class="card">
+                    <div class="card-header"><h2>All Travelers (${travelers.length})</h2></div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Name</th><th>Phone</th><th>Total Trips</th><th>Last Inquiry</th><th>Actions</th></tr></thead>
+                            <tbody>${travelers.length ? travelers.map(t => {
+                const trips = inquiries.filter(i => i.phone === t.phone);
+                return `<tr>
+                                    <td><strong>${escapeHtml(t.name)}</strong></td>
+                                    <td><a href="tel:${t.phone}" style="color: var(--primary);">${t.phone}</a></td>
+                                    <td>${trips.length}</td>
+                                    <td>${formatDate(trips[0].created_at)}</td>
+                                    <td><div class="actions">
+                                        <a href="https://wa.me/${t.phone.replace(/\D/g, '')}?text=Hi ${encodeURIComponent(t.name)}, this is SafarSorted!" class="action-btn whatsapp" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></a>
+                                    </div></td>
+                                </tr>`;
+            }).join('') : '<tr><td colspan="5"><div class="empty-state"><p>No travelers yet</p></div></td></tr>'}</tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Settings
+        function renderSettings() {
+            const settings = JSON.parse(localStorage.getItem('safarsorted_settings') || '{}');
+
+            document.getElementById('mainContent').innerHTML = `
+                <div class="card">
+                    <div class="settings-section">
+                        <h3>📞 Contact Information</h3>
+                        <div class="form-group"><label>WhatsApp Number</label><input type="text" id="settingWhatsapp" value="${settings.whatsapp || '+91 8989015959'}" placeholder="+91 XXXXXXXXXX"></div>
+                        <div class="form-group"><label>Email Address</label><input type="text" id="settingEmail" value="${settings.email || 'safarsorted@gmail.com'}" placeholder="email@example.com"></div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>🎨 Branding</h3>
+                        <div class="form-group"><label>Company Name</label><input type="text" id="settingCompany" value="${settings.company || 'SafarSorted'}" placeholder="Company Name"></div>
+                        <div class="form-group"><label>Tagline</label><input type="text" id="settingTagline" value="${settings.tagline || 'Your Journey, Sorted!'}" placeholder="Your tagline"></div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>🔔 Notifications</h3>
+                        <div class="settings-row"><label>Email notifications for new inquiries</label><input type="checkbox" id="settingNotifyEmail" ${settings.notifyEmail ? 'checked' : ''}></div>
+                        <div class="settings-row"><label>Sound alert for new inquiries</label><input type="checkbox" id="settingNotifySound" ${settings.notifySound ? 'checked' : ''}></div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>🗑️ Data Management</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-outline" onclick="exportData()">📤 Export Data</button>
+                            <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">📥 Import Data</button>
+                            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                            <button class="btn btn-outline" style="border-color: #ef4444; color: #ef4444;" onclick="clearAllData()">🗑️ Clear All Data</button>
+                        </div>
+                    </div>
+                    <div style="padding: 1.5rem; border-top: 1px solid var(--border);">
+                        <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Table Row
+        function renderRow(i) {
+            return `<tr>
+                <td>${formatDate(i.created_at)}</td>
+                <td><strong>${escapeHtml(i.name)}</strong></td>
+                <td><a href="tel:${i.phone}" style="color: var(--primary);">${i.phone}</a></td>
+                <td style="text-transform: capitalize;">${i.destination}</td>
+                <td><span class="badge badge-${i.status}">${i.status}</span></td>
+                <td><div class="actions">
+                    <button class="action-btn" onclick="openEditModal(${i.id})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <a href="https://wa.me/${i.phone.replace(/\D/g, '')}?text=Hi ${encodeURIComponent(i.name)}, this is SafarSorted!" class="action-btn whatsapp" target="_blank" title="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></a>
+                </div></td>
+            </tr>`;
+        }
+
+        function renderFullRow(i) {
+            return `<tr>
+                <td>${formatDate(i.created_at)}</td>
+                <td><strong>${escapeHtml(i.name)}</strong></td>
+                <td><a href="tel:${i.phone}" style="color: var(--primary);">${i.phone}</a></td>
+                <td style="text-transform: capitalize;">${i.destination}</td>
+                <td>${i.travelers || '-'}</td>
+                <td><span class="badge badge-${i.status}">${i.status}</span></td>
+                <td><div class="actions">
+                    <button class="action-btn" onclick="openEditModal(${i.id})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <a href="https://wa.me/${i.phone.replace(/\D/g, '')}?text=Hi ${encodeURIComponent(i.name)}, this is SafarSorted!" class="action-btn whatsapp" target="_blank" title="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg></a>
+                    <button class="action-btn delete" onclick="deleteInquiry(${i.id})" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div></td>
+            </tr>`;
+        }
+
+        // Filter & Search
+        function setFilter(filter) { currentFilter = filter; renderInquiries(); }
+        function handleSearch(query) {
+            searchQuery = query.toLowerCase();
+            // Re-render current tab with search filter
+            if (currentTab === 'dashboard') renderDashboard();
+            else if (currentTab === 'inquiries') renderInquiries();
+            else if (currentTab === 'travelers') renderTravelers();
+        }
+
+        // Modal Functions
+        function openEditModal(id) {
+            const inquiry = inquiries.find(i => i.id === id);
+            if (!inquiry) return;
+            document.getElementById('editId').value = id;
+            document.getElementById('editStatus').value = inquiry.status;
+            document.getElementById('editNotes').value = inquiry.notes || '';
+            document.getElementById('editModal').classList.add('active');
+        }
+        function closeModal() { document.getElementById('editModal').classList.remove('active'); }
+
+        function saveInquiry(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editId').value);
+            const idx = inquiries.findIndex(i => i.id === id);
+            if (idx !== -1) {
+                inquiries[idx].status = document.getElementById('editStatus').value;
+                inquiries[idx].notes = document.getElementById('editNotes').value;
+                saveData();
+            }
+            closeModal();
+            refreshData();
+        }
+
+        function deleteInquiry(id) {
+            if (confirm('Delete this inquiry?')) {
+                inquiries = inquiries.filter(i => i.id !== id);
+                saveData();
+                refreshData();
+            }
+        }
+
+        // Settings Functions
+        function saveSettings() {
+            const settings = {
+                whatsapp: document.getElementById('settingWhatsapp').value,
+                email: document.getElementById('settingEmail').value,
+                company: document.getElementById('settingCompany').value,
+                tagline: document.getElementById('settingTagline').value,
+                notifyEmail: document.getElementById('settingNotifyEmail').checked,
+                notifySound: document.getElementById('settingNotifySound').checked
+            };
+            localStorage.setItem('safarsorted_settings', JSON.stringify(settings));
+            alert('✅ Settings saved!');
+        }
+
+        function exportData() {
+            const data = { inquiries, settings: JSON.parse(localStorage.getItem('safarsorted_settings') || '{}') };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `safarsorted_backup_${new Date().toISOString().split('T')[0]}.json`; a.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.inquiries) { inquiries = data.inquiries; saveData(); }
+                    if (data.settings) localStorage.setItem('safarsorted_settings', JSON.stringify(data.settings));
+                    alert('✅ Data imported!');
+                    refreshData();
+                } catch { alert('❌ Invalid file'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Delete ALL data? This cannot be undone!')) {
+                localStorage.removeItem('safarsorted_inquiries');
+                localStorage.removeItem('safarsorted_settings');
+                inquiries = [];
+                alert('🗑️ All data cleared');
+                refreshData();
+            }
+        }
+
+        // Utility Functions
+        function refreshData() { loadData(); switchTab(currentTab); }
+        function formatDate(d) { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    </script>
+    <script src="js/api-config.js"></script>
+    <script src="js/backend.js"></script>
+</body>
+
+</html>
